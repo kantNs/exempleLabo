@@ -1,0 +1,281 @@
+﻿<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <title>Titre de la page</title>
+
+	<link rel="stylesheet" href="stylesheets/style.css">
+	<link rel="stylesheet" href="stylesheets/header.css">
+	<link rel="stylesheet" href="stylesheets/bootstrap.css">
+	<link rel="stylesheet" href="stylesheets/footer_css.css">
+  </head>
+  <body>
+  <main id="app"><link href="https://fonts.googleapis.com/css?family=Roboto|Poppins" rel="stylesheet">
+			<meta name="viewport" content="width=device-width">
+			<header >
+				<div class="wrap">
+					<div id="hamburger" v-on:click="display_menu()">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<nav id="menu">
+						<li v-on:click="currentPage = 'accueil'"> <a href="#" class="nav-links">Accueil</a></li>
+						<li v-on:click="currentPage = 'qsn'"><a href="#" class="nav-links">Qui sommes-nous ?</a></li>
+						<li v-if="connected == 'admin'" v-on:click="currentPage = 'liste'"><a href="#" class="nav-links">Gestion utilisateur</a></li>
+						<li v-if="connected == 'true'" v-on:click="currentPage = 'cpte'"><a href="#" class="nav-links">Gestion profil</a></li>
+						<li class="drop"><a v-on:click="display_drop_menu($event)" id="state">Products<i class="icon-arrow"></i>
+							<i class="fa fa-angle-down" aria-hidden="true"></i>
+							<i class="fa fa-angle-up" aria-hidden="true"></i></a>
+							<ul class="drop_menu">
+								<li v-on:click="currentPage = 'prod1'; readElement3();" ><a v-if="connected == 'true'" class="color_item" href="#">Mon panier de vente</a></li>
+								<li v-on:click="currentPage = 'prodadd'" ><a v-if="connected == 'true'" class="color_item" href="#">Ajouter un produit</a></li>
+								<li v-on:click="currentPage = 'info';readElement2();" ><a class="color_item" href="#">Le marché</a></li>
+							</ul>
+						</li>
+						
+              <li v-on:click="currentPage = 'register'"><a v-if="connected == 'false'"  href="#" class="d" ><span class="glyphicon glyphicon-log-in"></span> register</a></li>
+              <li v-on:click="currentPage = 'login'"><a v-if="connected == 'false'" href="#" class="d" ><span class="glyphicon glyphicon-log-in"></span> Login</a>  </li>
+              <li v-on:click="toLogout()"><a v-if="connected == 'true' || connected == 'admin'" href="#" class="d" ><span class="glyphicon glyphicon-log-in"></span> Logout</a>  </li>
+            
+					</nav>
+					
+				</div>
+			</header>
+	  
+	  <accueil 
+        v-if="currentPage === 'accueil'">
+      </accueil>
+
+	  
+	  <qsn 
+         v-else-if="currentPage === 'qsn'">
+      </qsn>
+	  
+	  
+	  <section v-else-if="currentPage === 'info'" id="info">
+	  <button class="btn btn-primary" v-on:click="readElement2()">Actualiser l'affichage !</button>
+        <h1 v-if="connected == 'true'" >Voici le marche secret du Bshopping</h1>
+        <p v-if="connected == 'true'">Vous pouvez y trouver tout ce que vous voudrez</p>
+		<table class="table" width="100%">
+		<thead>
+		  <tr>
+			<th>Id</th>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Image</th>
+			<th>Price</th>
+		  </tr>
+		  </thead>
+		  <tbody>
+			<tr v-for="item in myList2">
+				<tr v-for="item in myList2">
+				<td><a> {{ item.Id }}</a> </td>
+				<td><a>{{ item.Name }}</a> </td>
+				<td><a>{{ item.Description}}</a> </td>
+				<td><img  height="200" width="142" :src=item.Image> </td>
+				<td><a>:{{ item.Price }}</a> </td>
+				
+			</tr>
+		</tbody>
+		</table>
+		
+      </section>
+	  
+	  
+	  <section v-else-if="currentPage === 'prod1'" id="prod1">
+	  <button class="btn btn-primary" v-on:click="readElement3()">Actualiser l'affichage2 !</button>
+        <h1 v-if="connected == 'true'" >Ceci est l'info sur l'objet</h1>
+        <p v-if="connected == 'true'">Cet objet</p>
+		<table class="table" width="100%">
+		<thead>
+		  <tr>
+			<th>Id</th>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Image</th>
+			<th>Price</th>
+			<th class="col-sm-2">Actions</th>
+		  </tr>
+		  </thead>
+		  <tbody>
+			<tr v-for="item in myList2">
+				<td><a>" {{ item.Id }}</a> </td>
+				<td><a>{{ item.Name }}</a> </td>
+				<td><a>{{ item.Description}}</a> </td>
+				<td><img  height="200" width="142" :src=item.Image> </td>
+				<td><a>{{ item.Price }}</a> </td>
+				<td>
+				  <button  class="btn btn-warning btn-xs"  v-on:click="currentPage='prodedit', ProdSup=item.Name, ProdId=item.Id, ProdDec=item.Description, ProdIm=item.Image, ProdPrix=item.Price " >Edit </button>
+				  <button class="btn btn-danger btn-xs"  v-on:click=" ProdSup=item.Name, ProdId=item.Id,supProd(),readElement3() " >Delete</button>
+				</td>
+				
+			</tr>
+		</tbody>
+		</table>
+		
+      </section>
+	  
+	  
+	  <section v-else-if="currentPage === 'prodadd'" id="prodadd">
+        <div>
+		<h2>Add new product</h2>
+		<form v-on:submit="addProduct()">
+		  <div class="form-group">
+			<label for="add-name">Name</label>
+			<input class="form-control" id="add-name" v-model="Name" required/>
+		  </div>
+		  <div class="form-group">
+			<label for="add-description">Description</label>
+			<textarea class="form-control" id="add-description" rows="10" v-model="Description"></textarea>
+		  </div>
+		  <div class="form-group">
+			<label for="add-image">Image with url</label>
+			<input class="form-control" id="add-image" v-model="Image" required/>
+		  </div>
+		  <div class="form-group">
+			<label for="add-price">Price, <span class="glyphicon glyphicon-euro"></span></label>
+			<input type="number" class="form-control" id="add-price" v-model="Price"/>
+		  </div>
+		  <button  type="submit" class="btn btn-primary">Create</button>
+			</form>
+		  </div>
+      </section>
+	  
+	  <section v-else-if="currentPage === 'prodedit'" id="prodedit">
+        <div>
+		<h2>What would you like to change</h2>
+		<form v-on:submit="editProd();readElement3();">
+		  <div class="form-group">
+			<label for="add-name">Name</label><br/>
+			<label for="add-name">Ancienne valeur : {{ ProdSup }}</label>
+			<input class="form-control" id="add-name" v-model="Name" required/>
+		  </div>
+		  <div class="form-group">
+			<label for="add-description">Description</label><br/>
+			<label for="add-name">Ancienne valeur : {{ ProdDec }}</label>
+			<textarea class="form-control" id="add-description" rows="10" v-model="Description"></textarea>
+		  </div>
+		  <div class="form-group">
+			<label for="add-image">Image with url</label><br/>
+			<label for="add-name">Ancienne valeur : {{ ProdIm }}</label>
+			<input class="form-control" id="add-image" v-model="Image" required/>
+		  </div>
+		  <div class="form-group">
+			<label for="add-price">Price, <span class="glyphicon glyphicon-euro"></span></label><br/>
+			<label for="add-name">Ancienne valeur : {{ ProdPrix	}}</label>
+			<input type="number" class="form-control" id="add-price" v-model="Price"/>
+		  </div>
+		  <button  type="submit" class="btn btn-primary">Edit</button>
+			</form>
+		  </div>
+      </section>
+	  
+	  <section v-else-if="currentPage === 'register'" id="register">
+        <h1>Inscrivez-vous</h1>
+        <a> Login<input type="text" v-model="Id"></a><br/>
+		<br/>
+		<a> Mdp <input type="text" v-model="Mdp"></a><br/>
+		<button class="btn btn-primary" v-on:click="sendNewElement()">Register !</button>
+      </section>
+	  
+	  <section v-else-if="currentPage === 'login'" id="login">
+        <h1>Connectez-vous</h1>
+        <a> Login <input type="text" v-model="IdLogin"></a><br/>
+		<br/>
+		 <a> Mdp<input type="password" v-model="MdpLogin"></a><br/>
+		<button class="btn btn-primary" v-on:click="toLogin()">Login !</button>
+      </section>
+	  
+      <section v-else-if="currentPage === 'liste'" id="liste">
+        <ul>
+          <li v-for="item in myList">"Id": {{ item.Id }}</li>
+		  <li v-for="item in myList">"Mdp":{{ item.Mdp }}</li>
+        </ul>
+		<button class="btn btn-primary" v-on:click="readElement()">Afficher liste !</button></br>
+		<input type="text" v-model="Sup">
+		<button class="btn btn-primary" v-on:click="SupElement()">Supprimer compte avec id !</button></br>
+		
+		<input type="text" v-model="SearchId">
+		<button class="btn btn-primary" v-on:click="readById()">rechercher par Id !</button></br>
+		<ul v-if="status == 'true'">
+            <li>What you searched for
+				<ul v-for="item in myList" >
+				  <li v-if="item.Id == IdTrouve">"Id": {{ item.Id }}</li>
+				  
+				  <li v-if="item.Mdp == MdpTrouve">"Mdp":{{ item.Mdp }}</li>
+				</ul>
+			</li>
+        </ul>
+		
+      </section>
+	  
+	  <section v-else-if="currentPage === 'cpte'" id="cpte">
+        <h1>Changer mdp</h1>
+		<input type="password" v-model="MdpUpd">
+		<button class="btn btn-primary" v-on:click="UpdateElement()">Mettre à jour  !</button>
+      </section>
+	  
+	  
+	  
+	  
+	  <footer class="footer-distributed">
+
+			<div class="footer-left">
+
+				<h3>B<span>Shopping</span></h3>
+
+				<p class="footer-company-name">Bshopping &copy; 2018</p>
+			</div>
+
+			<div class="footer-center">
+
+				<div>
+					<i class="fa fa-map-marker"></i>
+					<p><span>26 rue du web</span> Paris, France</p>
+				</div>
+
+				<div>
+					<i class="fa fa-phone"></i>
+					<p>+33 6 12 34 56 78</p>
+				</div>
+
+				<div>
+					<i class="fa fa-envelope"></i>
+					<p><a href="mailto:nesaratnam@et.esiea.fr">nesaratnam@et.esiea.fr</a></p>
+				</div>
+
+			</div>
+
+			<div class="footer-right">
+
+				<div class="footer-icons">
+
+					<a href="#"><i class="fa fa-facebook"></i></a>
+					<a href="#"><i class="fa fa-twitter"></i></a>
+					<a href="#"><i class="fa fa-linkedin"></i></a>
+					<a href="#"><i class="fa fa-github"></i></a>
+
+				</div>
+
+			</div>
+
+		</footer>
+    </main>
+	
+	
+	
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.2/axios.js"></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/vue-router/2.2.1/vue-router.js'></script>
+	<script  src="javascripts/jscript.js"></script>
+    <script src="accueil.component.js"></script>
+	<script src="qsn.component.js"></script>
+	<script src="javascripts/header.js"></script>
+	<script src="https://unpkg.com/vue-swal"></script>
+	
+<script>
+                      
+</script>
+  </body>
+</html>
